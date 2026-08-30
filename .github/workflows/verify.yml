@@ -8,8 +8,34 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout plugin repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python scripts/verify.py
+
+      - name: Run repository conformance checks
+        run: python scripts/verify.py
+
+      - name: Checkout official OpenAI plugin evaluator
+        uses: actions/checkout@v4
+        with:
+          repository: openai/plugins
+          path: .openai-plugins
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run official OpenAI plugin-eval
+        run: |
+          node .openai-plugins/plugins/plugin-eval/scripts/plugin-eval.js analyze plugins/sol-advisor-work --format markdown | tee plugin-eval-report.md
+
+      - name: Upload plugin-eval report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sol-advisor-work-plugin-eval
+          path: plugin-eval-report.md
