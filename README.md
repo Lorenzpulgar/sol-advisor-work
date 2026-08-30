@@ -2,24 +2,26 @@
 
 **A quality-first AI team for ChatGPT Work.**
 
-Sol Advisor Work is a Work-native adaptation of the original [Sol Advisor](https://github.com/DannyMac180/sol-advisor). Instead of asking one AI model to do everything, it organizes several models like a small team and gives each one the kind of work it handles best.
+Sol Advisor Work is a Work-native adaptation of the original [Sol Advisor](https://github.com/DannyMac180/sol-advisor). Instead of asking one AI model to do everything, it organizes the work like a small team.
 
-The main idea is simple: **Sol leads, Luna handles lighter work, Terra handles substantial implementation, and a fresh Sol can review important results.**
+The ideal architecture is simple: **Sol leads, Luna handles lighter work, Terra handles substantial implementation, and an independent reviewer checks important results.** Exact model assignment is used only when the current Work runtime exposes and verifies those controls.
 
 ## Why it exists
 
-Not every task needs the most powerful model from beginning to end. Simple work can be handled faster by a lighter model, while difficult decisions deserve stronger reasoning.
+Not every task needs the most powerful model from beginning to end. Simple work can be handled faster by a lighter worker, while difficult decisions deserve stronger reasoning.
 
-Sol Advisor Work keeps **GPT-5.6 Sol** in charge of the overall task. Sol understands the request, chooses the approach, decides when to delegate, checks the result, and decides when the work is ready.
-
-This makes Sol Advisor Work a **quality-first** orchestrator: it saves work where it makes sense, but keeps the strongest model responsible for the important decisions.
+Sol Advisor Work is **quality-first**: the parent owns the overall problem, architecture, verification, and acceptance, while delegation is used only when the runtime can support it safely.
 
 ## Meet the AI team
 
-- **Sol — Team lead and architect.** Understands the full problem, makes important decisions, coordinates the other models, verifies their work, and accepts the final result.
+When Work exposes exact model routing, the preferred roles are:
+
+- **Sol — Team lead and architect.** Understands the full problem, makes important decisions, verifies work, and accepts the final result.
 - **Luna — Fast specialist.** Handles simple, repetitive, mechanical, or clearly defined work.
 - **Terra — Main implementer.** Handles medium-to-difficult execution that needs more judgment and context.
-- **Fresh Sol — Independent reviewer.** For important or risky work, a new Sol session reviews the result without relying on the original conversation context.
+- **Fresh Sol — Independent reviewer.** Reviews important or risky work in a separate workstream when Work can provide it.
+
+If Work does not expose exact model routing, the same workflow uses generic roles instead of pretending a hidden worker is Luna, Terra, or Sol.
 
 ## How it works
 
@@ -28,8 +30,8 @@ This makes Sol Advisor Work a **quality-first** orchestrator: it saves work wher
                            │
                            ▼
                     ┌─────────────┐
-                    │     SOL     │
-                    │  Team Lead  │
+                    │   PARENT    │
+                    │ Quality lead│
                     └──────┬──────┘
                            │
               ┌────────────┼────────────┐
@@ -37,89 +39,91 @@ This makes Sol Advisor Work a **quality-first** orchestrator: it saves work wher
           Simple work   Medium work   Hard decisions
               │            │            │
               ▼            ▼            ▼
-            LUNA          TERRA          SOL
+       light worker   implementer   specialist
               │            │            │
               └────────────┴────────────┘
                            │
                            ▼
-                    SOL verifies
+                    Parent verifies
                            │
                     High-risk task?
                       /         \
                     No           Yes
                     │             │
-                   DONE      Fresh SOL review
+                   DONE      Independent review
 ```
 
-In plain English:
+When exact model control is available, those roles map to Luna, Terra, and Sol. Otherwise, the role contracts stay the same without unsupported model claims.
 
-1. **Sol looks at the whole task first.**
-2. If the work is simple and well defined, Sol can give it to Luna.
-3. If the work requires more judgment or substantial implementation, Sol can give it to Terra.
-4. Sol keeps difficult architectural or strategic decisions for itself.
-5. Sol checks the actual result before accepting it.
-6. If the task is especially important or risky, a fresh Sol can perform an independent final review.
+## Three Work capability levels
+
+Every run begins with a capability check:
+
+- **Tier A — Exact routing.** Work exposes multi-agent execution and enough evidence to select the intended worker model. Luna/Terra/Sol names may be used when verified.
+- **Tier B — Work multi-agent.** Work can run parallel agents, but exact worker model identity is not guaranteed. The plugin uses role names such as `implementation-worker` or `complex-specialist`.
+- **Tier C — Safe fallback.** The plugin cannot access multiple agents. The parent performs the same structured workflow directly and reports that delegation was unavailable.
+
+This prevents the plugin from claiming a model, reasoning level, fresh context, or read-only sandbox that Work did not actually prove.
 
 ## Work modes
 
-Sol Advisor Work can choose between a few simple ways of working:
-
-- **Solo** — Sol handles the task itself.
-- **Delegate** — Sol gives one clearly defined part of the work to Luna or Terra and then checks it.
-- **Parallel Read** — several agents can investigate different sources or parts of a problem at the same time, while Sol combines the findings.
-- **Audit** — Sol completes the work and a fresh Sol independently reviews it.
-- **Full** — for broad or high-risk tasks: research may happen in parallel, one agent performs the main implementation, Sol verifies it, and a fresh Sol performs the final review.
+- **Solo** — the parent handles and verifies the task.
+- **Delegate** — one clearly scoped worker performs implementation, then the parent checks it.
+- **Parallel Read** — several workers investigate independent questions while the parent combines the evidence.
+- **Audit** — the parent completes the work and a separate reviewer checks it when available.
+- **Full** — for broad or high-risk tasks: parallel research may be used, exactly one writer performs shared-state changes, the parent verifies, and independent review is added when supported.
 
 ## One writer, many researchers
 
-Work is especially useful when several agents can explore a problem at the same time. Sol Advisor Work encourages parallel agents for things such as research, reading documentation, exploring files, comparing alternatives, or finding missing tests.
-
-For actual changes, however, it normally prefers **one writer at a time**. This reduces the chance that two agents overwrite each other's work or create conflicting changes.
+Parallel research is useful; competing writes are dangerous. Sol Advisor Work therefore prefers several read-only research lanes but **one writer at a time** for shared files or artifacts.
 
 ```text
 Research:        Agent A ─┐
-                 Agent B ─┼──► Sol combines findings
+                 Agent B ─┼──► Parent combines findings
                  Agent C ─┘
 
-Implementation:             ► One writer ► Sol verifies
+Implementation:             ► One writer ► Parent verifies
 ```
 
-## Why Sol stays in charge
+## Why the strongest reasoning stays near the top
 
-The most expensive mistake in a multi-agent system is often not bad implementation. It is **solving the wrong problem**.
+The most expensive mistake in a multi-agent system is often not bad implementation. It is **solving the wrong problem**. A worker can perfectly execute a bad plan.
 
-A worker can perfectly execute a bad plan. By keeping Sol responsible for understanding the request, choosing the architecture, dividing the work, and checking the result, Sol Advisor Work puts the strongest reasoning where an error would have the biggest effect.
+The quality-first design therefore keeps architecture, escalation, verification, and final acceptance in the control plane rather than blindly trusting worker reports.
 
 ## Designed for ChatGPT Work
 
-The original Sol Advisor was designed around Codex-native custom agents. Sol Advisor Work keeps the same core philosophy but is designed for **ChatGPT Work hosted subagents**.
+The original Sol Advisor was built around Codex-native custom agents. Sol Advisor Work instead targets Work's hosted execution model and deliberately avoids depending on Codex-only TOML agents, local rollout inspectors, or unproven per-agent sandbox guarantees.
 
-That means this project focuses on:
+## Technical reliability
 
-- model-aware delegation inside Work;
-- parallel research and exploration;
-- clear responsibilities between agents;
-- one-writer coordination for shared work;
-- parent verification instead of blindly trusting worker reports;
-- fresh review for important outcomes.
+The repository includes:
 
-It does **not** pretend that Work provides local per-agent sandbox guarantees when those guarantees are not visible to the orchestrator.
+- the standard `.agents/plugins/marketplace.json` entry;
+- an installable package under `plugins/sol-advisor-work/`;
+- `.codex-plugin/plugin.json` and skill metadata following the OpenAI plugin layout;
+- an explicit A/B/C runtime capability gate;
+- scoped worker contracts and parent verification rules;
+- serialized shared-state writers;
+- GitHub Actions verification via `scripts/verify.py` to detect missing files, invalid JSON, package drift, bad marketplace paths, oversized starter prompts, and missing capability-contract markers.
+
+Static packaging can be validated by CI. Exact multi-model routing remains a runtime capability of ChatGPT Work and is never falsely presented as a repository-level guarantee.
 
 ## When should I use Sol Advisor Work?
 
-Choose Sol Advisor Work when **quality is the priority** and you want the strongest model continuously responsible for the task.
+Choose Sol Advisor Work when **quality is the priority** and you want the strongest available reasoning continuously responsible for architecture and acceptance.
 
-It is a good fit for complex projects, important decisions, software work, research, business analysis, multi-step workflows, and tasks where a mistake near the beginning could affect everything that follows.
-
-If your main priority is reducing model cost while still escalating difficult work to Sol when necessary, see **Luna Advisor Work**.
+For a more cost-focused design that escalates difficult work only when needed, see **Luna Advisor Work**.
 
 ## For technical users
 
-The public README intentionally keeps the concept simple. The full routing rules, worker contracts, verification behavior, and Work-specific safeguards live in:
+The complete routing and safety contracts live in:
 
 - `skills/orchestration/SKILL.md`
 - `skills/orchestration/references/role-contracts.md`
 - `skills/orchestration/references/operations.md`
+
+The installable copy is mirrored under `plugins/sol-advisor-work/`, and CI requires both copies to remain identical.
 
 ## Attribution
 
