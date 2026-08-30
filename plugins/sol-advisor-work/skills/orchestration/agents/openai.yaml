@@ -1,4 +1,4 @@
 interface:
-  display_name: "Sol Advisor Work"
-  short_description: "Sol-led Work orchestration with explicit Luna/Terra routing and fresh Sol review"
-  default_prompt: "Use $orchestration to declare a WORK ROUTE, parallelize independent read-heavy work, serialize shared-state writes, and route execution by task complexity."
+  display_name: "Sol Advisor Work Orchestration"
+  short_description: "Quality-first Work routing with runtime capability checks and verified fallbacks"
+  default_prompt: "Use $orchestration. Run the WORK CAPABILITY CHECK first, then choose the safest quality-first route supported by this Work runtime."
