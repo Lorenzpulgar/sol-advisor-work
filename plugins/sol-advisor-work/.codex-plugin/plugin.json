@@ -1,24 +1,24 @@
 {
   "name": "sol-advisor-work",
-  "version": "0.1.0",
-  "description": "Work-native selective orchestration led by GPT-5.6 Sol, with risk-gated Luna/Terra delegation and fresh Sol review.",
+  "version": "0.2.0",
+  "description": "Quality-first ChatGPT Work orchestration led by Sol with capability-aware delegation and verification.",
   "author": {"name": "Lorenzpulgar", "url": "https://github.com/Lorenzpulgar"},
   "homepage": "https://github.com/Lorenzpulgar/sol-advisor-work#readme",
   "repository": "https://github.com/Lorenzpulgar/sol-advisor-work",
   "license": "MIT",
-  "keywords": ["chatgpt-work", "orchestration", "subagents", "gpt-5.6", "sol", "terra", "luna"],
+  "keywords": ["chatgpt-work", "orchestration", "multi-agent", "gpt-5.6", "sol", "terra", "luna"],
   "skills": "./skills/",
   "interface": {
     "displayName": "Sol Advisor Work",
-    "shortDescription": "Sol-led Work orchestration with selective Luna/Terra delegation and fresh Sol review.",
-    "longDescription": "A ChatGPT Work-native adaptation of Sol Advisor. Keep GPT-5.6 Sol in the parent session for intent, architecture, routing, verification, and acceptance. Use hosted Work subagents explicitly: GPT-5.6 Luna for mechanical/light bounded work, GPT-5.6 Terra for medium or judgment-heavy execution, and a fresh GPT-5.6 Sol for independent review when risk justifies it. Parallelize read-heavy work; serialize shared-state writes. Never claim per-agent sandbox isolation in Work.",
+    "shortDescription": "Quality-first Sol orchestration that adapts to the Work capabilities actually exposed.",
+    "longDescription": "Sol owns intent, architecture, verification, and acceptance. Exact Luna/Terra/Sol worker routing is used only when Work exposes verifiable controls. Otherwise the workflow safely uses role-based Work agents or a parent-only fallback without making unsupported model or isolation claims.",
     "developerName": "Lorenzpulgar",
     "category": "Productivity",
-    "capabilities": ["Interactive", "Read", "Write"],
+    "capabilities": ["Interactive", "Write"],
     "websiteURL": "https://github.com/Lorenzpulgar/sol-advisor-work",
     "defaultPrompt": [
-      "Orchestrate this task with Sol Advisor Work. Keep Sol as the control plane and delegate only when delegation improves quality, speed, or context hygiene.",
-      "Use parallel subagents for independent read-heavy work, a single writer for shared-state changes, and a fresh Sol review only when risk warrants it."
+      "Use $orchestration. Check Work capabilities first, then choose the safest quality-first route.",
+      "Use parallel readers, one writer, parent verification, and risk-gated independent review."
     ]
   }
 }
