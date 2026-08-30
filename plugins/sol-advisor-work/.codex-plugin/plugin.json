@@ -1,0 +1,24 @@
+{
+  "name": "sol-advisor-work",
+  "version": "0.2.0",
+  "description": "Quality-first ChatGPT Work orchestration led by GPT-5.6 Sol with capability-aware delegation and verification.",
+  "author": {"name": "Lorenzpulgar", "url": "https://github.com/Lorenzpulgar"},
+  "homepage": "https://github.com/Lorenzpulgar/sol-advisor-work#readme",
+  "repository": "https://github.com/Lorenzpulgar/sol-advisor-work",
+  "license": "MIT",
+  "keywords": ["chatgpt-work", "orchestration", "multi-agent", "gpt-5.6"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Sol Advisor Work",
+    "shortDescription": "Sol-led orchestration that adapts to the Work capabilities available at runtime.",
+    "longDescription": "A ChatGPT Work-native adaptation of Sol Advisor. Sol owns intent, architecture, verification, and acceptance. Exact worker routing is used only when the Work runtime exposes the required controls; otherwise the workflow uses available Work parallelism or a Sol-led fallback. Shared-state writes are serialized and review is risk-gated.",
+    "developerName": "Lorenzpulgar",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Read", "Write"],
+    "websiteURL": "https://github.com/Lorenzpulgar/sol-advisor-work",
+    "defaultPrompt": [
+      "Use $orchestration. Run the WORK CAPABILITY CHECK first and keep Sol as the quality control plane.",
+      "Use only delegation capabilities the current Work runtime exposes and verify observable results before acceptance."
+    ]
+  }
+}
