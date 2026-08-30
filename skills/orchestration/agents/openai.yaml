@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sol Advisor Work"
+  short_description: "Sol-led Work orchestration with explicit Luna/Terra routing and fresh Sol review"
+  default_prompt: "Use $orchestration to declare a WORK ROUTE, parallelize independent read-heavy work, serialize shared-state writes, and route execution by task complexity."
