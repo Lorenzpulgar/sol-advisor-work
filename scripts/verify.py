@@ -11,6 +11,7 @@ PAIRS = [
     (ROOT / "skills/orchestration/agents/openai.yaml", PKG / "skills/orchestration/agents/openai.yaml"),
     (ROOT / "skills/orchestration/references/operations.md", PKG / "skills/orchestration/references/operations.md"),
     (ROOT / "skills/orchestration/references/role-contracts.md", PKG / "skills/orchestration/references/role-contracts.md"),
+    (ROOT / "skills/orchestration/references/runtime-evidence.md", PKG / "skills/orchestration/references/runtime-evidence.md"),
 ]
 errors = []
 
@@ -70,6 +71,11 @@ if skill.is_file():
         "runtime_attested",
         "usage_verified",
         "Acceptance",
+        "Fail-closed routing and budget gate",
+        "references/runtime-evidence.md",
+        "execution_id",
+        "input_tokens",
+        "output_tokens",
     ]
     for marker in markers:
         if marker not in text:

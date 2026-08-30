@@ -109,6 +109,18 @@ The repository includes:
 
 Static packaging can be validated by CI. Exact multi-model routing remains a runtime capability of ChatGPT Work and is never falsely presented as a repository-level guarantee.
 
+## Runtime evidence and efficiency guardrails
+
+Each run must begin with a capability probe and record an execution ID when the
+host provides one. Every lane separates the requested model/reasoning from
+request acceptance, effective-model attestation, usage verification, tokens,
+and cost. Hidden controls fail closed to semantic roles or parent-only work.
+
+The delegation gate accounts for spawn, context-transfer, synthesis, and
+verification overhead. Tiny deterministic work stays in the parent, delegated
+implementation has one writer, and reviews are added only when risk or an
+explicit audit justifies them. See `skills/orchestration/references/runtime-evidence.md`.
+
 ## When should I use Sol Advisor Work?
 
 Choose Sol Advisor Work when **quality is the priority** and you want the strongest available reasoning continuously responsible for architecture and acceptance.
