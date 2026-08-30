@@ -1,6 +1,6 @@
 ---
 name: orchestration
-description: "ChatGPT Work-native Sol-led orchestration with capability-aware routing, parallel read lanes, serialized writers, and risk-gated review."
+description: "ChatGPT Work-native Sol-led orchestration with capability-aware routing, parallel read lanes, serialized writers, and evidence-based efficiency reporting."
 ---
 
 # Sol Advisor Work Orchestration
@@ -26,19 +26,51 @@ capability_tier: A | B | C
 
 Use these tiers:
 
-- **Tier A — exact routing:** multi-agent execution is available and the runtime exposes enough controls to request the intended worker model; reasoning is requested only when that control is exposed. Exact Luna/Terra/Sol lane names may be claimed only when observable evidence supports them.
-- **Tier B — Work multi-agent:** Work/Ultra parallel agents are available but exact per-agent model identity or reasoning cannot be guaranteed. Use role-based prompts and parallel workstreams, but describe workers by role rather than claiming Luna/Terra/Sol execution.
-- **Tier C — single-agent fallback:** multi-agent execution is not available to this plugin/session. The Sol parent performs the task directly, using the same decomposition, verification, and risk rules without pretending delegation occurred.
+- **Tier A — runtime-attested exact routing:** multi-agent execution is available and the runtime exposes evidence sufficient to attest the effective worker model. Reasoning may be claimed only when separately observable.
+- **Tier B — Work multi-agent:** Work parallel agents are available and model/reasoning requests may be accepted, but effective backend model identity or effort is not attested. Use role-based claims even when requesting Luna/Terra/Sol.
+- **Tier C — single-agent fallback:** multi-agent execution is not available to this plugin/session. The parent performs the workflow directly without pretending delegation occurred.
 
-Never infer Tier A merely because Work can run multiple agents. If the host does not expose exact per-agent model routing, use Tier B.
+Never promote a run to Tier A merely because a model parameter was accepted. Request acceptance is not execution attestation.
+
+## Evidence dimensions — keep them separate
+
+Capability, routing evidence, quality, and efficiency are independent dimensions. A `fix-first` review MUST NOT lower the capability tier. A Tier A runtime can produce a bad implementation, and a Tier B runtime can produce an excellent one.
+
+For every tested or material delegated lane track:
+
+~~~text
+ROUTING EVIDENCE
+lane: <mechanical | routine | medium | complex | review>
+requested: <model/reasoning or role>
+request_accepted: yes | no | unknown
+runtime_attested: yes | no
+usage_verified: yes | no | unavailable
+observed_identity: <value or unavailable>
+~~~
+
+Rules:
+
+- `requested` records intent only.
+- `request_accepted=yes` proves only that the host accepted the control/request.
+- `runtime_attested=yes` requires host-provided execution metadata identifying the effective worker model.
+- `usage_verified=yes` requires model-grouped usage/billing telemetry attributable to the tested run or lane. Never infer it from the worker's prose.
+- If model identity is not attested, continue as Tier B even when the requested routing appears to work.
 
 ## Parent-session requirement
 
 Prefer GPT-5.6 Sol with high reasoning in the parent Work session when the user can select it. If runtime metadata exposes a different parent model/effort, disclose the mismatch. If metadata is hidden, continue without claiming a verified Sol pin.
 
+## DELEGATION VALUE CHECK — required before optional spawn
+
+Do not create a worker merely because a lane exists. Delegate only when the expected value exceeds spawn/context/coordination overhead.
+
+Prefer parent execution when work is tiny, local, deterministic, and faster to perform than to specify and verify. Prefer delegation when work is repetitive at meaningful scale, spans enough context to pollute the parent, can run independently in parallel, or benefits materially from a specialist.
+
+Exception: when the user explicitly requests a routing/runtime smoke test, a minimal representative worker may be spawned even if ordinary production routing would keep the task in the parent.
+
 ## Declare one route before substantial task work
 
-After the capability check, emit:
+After the capability check and delegation value check, emit:
 
 ~~~text
 WORK ROUTE
@@ -52,34 +84,34 @@ capability_tier: A | B | C
 Choose the least complex route that preserves quality.
 
 - `solo`: parent solves and verifies; no subagent.
-- `delegate`: one implementation worker owns the bounded write scope. In Tier A request the appropriate exact lane; in Tier B use a role-based worker; in Tier C collapse to parent execution.
-- `parallel-read`: independent read/research workers may run concurrently in Tier A/B; parent synthesizes. In Tier C the parent performs the reads serially or with whatever native Work behavior is available.
-- `audit`: parent implements/verifies, then a fresh review context when the runtime supports a genuinely separate workstream. Otherwise perform an explicit second-pass self-audit and label it as such.
-- `full`: broad/high-risk route: optional parallel read scouts, exactly one writer, parent verification, and independent review when available.
+- `delegate`: one implementation worker owns the bounded write scope. In Tier A request the appropriate exact lane; in Tier B use a role-based worker while recording the requested model separately; in Tier C collapse to parent execution.
+- `parallel-read`: independent read/research workers may run concurrently in Tier A/B; parent synthesizes. In Tier C the parent performs the reads serially or with whatever native behavior is available.
+- `audit`: parent implements/verifies, then a separate review context when supported. Otherwise perform an explicit second-pass self-audit and label it as such.
+- `full`: broad/high-risk route: optional parallel read scouts, exactly one implementation writer, parent verification, and independent review when available.
 
 Never silently downgrade a declared route. Escalate only when new evidence justifies it.
 
-## Tier A model routing
+## Requested model routing
 
-Only in Tier A, request model and reasoning explicitly when supported:
+When the host accepts model/reasoning controls, request:
 
-- mechanical/light bounded work: GPT-5.6 Luna, light or medium reasoning;
-- routine fully specified work: GPT-5.6 Luna, medium/high reasoning;
+- mechanical/light bounded work: GPT-5.6 Luna, low or medium reasoning;
+- routine fully specified work: GPT-5.6 Luna, medium reasoning;
 - medium implementation or judgment-heavy execution: GPT-5.6 Terra, medium/high reasoning;
 - complex architecture, ambiguous systems reasoning, or critical review: GPT-5.6 Sol, high reasoning.
 
-If exact requested routing cannot be observed, immediately reclassify to Tier B and stop claiming exact model assignment.
+In Tier B these are **requested routes**, not verified identities. Describe workers by semantic role unless runtime attestation exists.
 
 ## Tier B role routing
 
-When Work exposes multiple agents but not exact model identity, use semantic roles instead:
+When Work exposes multiple agents but not effective model attestation, use semantic roles:
 
 - `mechanical-worker`
 - `implementation-worker`
 - `complex-specialist`
 - `independent-reviewer`
 
-The quality contract remains the same: narrow scope, explicit interfaces, evidence-backed return, parent verification, one writer for shared state.
+The quality contract remains unchanged: narrow scope, explicit interfaces, evidence-backed return, parent verification, one writer for shared state.
 
 ## Parallelism rules
 
@@ -104,11 +136,11 @@ The parent settles material architecture before implementation delegation. Worke
 
 Treat every worker report as a claim. The parent independently inspects observable changed state and reruns/reproduces promised checks where Work tools permit it. State any verification gap explicitly.
 
-Exact model identity, reasoning level, or read-only isolation are themselves claims that require observable host evidence. Never convert a prompt request into a technical guarantee.
+Exact model identity, reasoning level, freshness, read-only isolation, and cost savings are technical claims that require observable evidence. Never convert a requested parameter or worker self-report into a guarantee.
 
-## Independent review
+## Independent review and QUALITY VERDICT
 
-For `audit` or `full`, use a separate review workstream when Work exposes one. In Tier A request fresh Sol/high only when observable model control supports it. In Tier B call it an `independent-reviewer`, not "Fresh Sol". In Tier C perform a second-pass parent audit and disclose that it is not context-independent.
+For `audit` or `full`, use a separate review workstream when Work exposes one. Request Sol/high when supported, but call it a verified Sol reviewer only when runtime attestation proves that identity. Otherwise call it `independent-reviewer`.
 
 Reviewer output:
 
@@ -120,8 +152,41 @@ FINDINGS: <precise findings or none>
 RESIDUAL RISK: <remaining risk or none>
 ~~~
 
-Any post-review correction invalidates the verdict and requires fresh verification.
+Map this separately to:
+
+~~~text
+QUALITY VERDICT
+status: ship | fix-first | rethink
+~~~
+
+A correction invalidates the prior quality verdict and requires fresh verification. The capability tier does not change because of a quality failure.
+
+## EFFICIENCY EVIDENCE
+
+Report efficiency separately from correctness:
+
+~~~text
+EFFICIENCY EVIDENCE
+routing_mix_requested: <summary>
+usage_telemetry_available: yes | no
+usage_consistent_with_requested_mix: yes | no | unknown
+unnecessary_delegations: <count or unknown>
+efficiency_verdict: verified | plausible | unverified | inefficient
+~~~
+
+Use `verified` only when attributable usage telemetry supports the requested model mix and delegation was justified. Use `plausible` when cheap-model requests were accepted and task allocation was sensible but backend usage cannot be observed. Never claim savings from requested routing alone.
 
 ## Acceptance
 
-Report completion only after reconciling worker claims with observable state. Include capability tier, route, workers actually used, verification performed, and any model/permission assumptions that could not be independently observed.
+Report completion only after reconciling worker claims with observable state. Final material test/report output must keep these dimensions separate:
+
+~~~text
+CAPABILITY TIER: A | B | C
+ROUTING EVIDENCE: <requested vs accepted vs attested>
+QUALITY VERDICT: ship | fix-first | rethink
+EFFICIENCY EVIDENCE: verified | plausible | unverified | inefficient
+VERIFIED: <observable facts>
+UNVERIFIED: <remaining claims>
+~~~
+
+Include the route, workers actually used, parent verification performed, and any model/reasoning/permission/usage assumptions that could not be independently observed.
