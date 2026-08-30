@@ -56,7 +56,22 @@ except Exception as exc:
 skill = PKG / "skills/orchestration/SKILL.md"
 if skill.is_file():
     text = skill.read_text()
-    for marker in ["name: orchestration", "WORK CAPABILITY CHECK", "Tier A", "Tier B", "Tier C", "Acceptance"]:
+    markers = [
+        "name: orchestration",
+        "WORK CAPABILITY CHECK",
+        "Tier A",
+        "Tier B",
+        "Tier C",
+        "ROUTING EVIDENCE",
+        "DELEGATION VALUE CHECK",
+        "QUALITY VERDICT",
+        "EFFICIENCY EVIDENCE",
+        "request_accepted",
+        "runtime_attested",
+        "usage_verified",
+        "Acceptance",
+    ]
+    for marker in markers:
         if marker not in text:
             errors.append(f"SKILL.md missing required marker: {marker}")
 
@@ -77,4 +92,8 @@ print("VERIFY OK")
 print(f"plugin={NAME}")
 print(f"package=plugins/{NAME}")
 print("capability_gate=A/B/C")
+print("routing_evidence=requested/accepted/attested")
+print("quality_separate=ok")
+print("efficiency_evidence=ok")
+print("delegation_value_check=ok")
 print("root_package_sync=ok")
