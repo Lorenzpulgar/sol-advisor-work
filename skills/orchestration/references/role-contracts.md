@@ -1,7 +1,14 @@
 # Work-native role contracts
 
-These contracts are for ChatGPT Work hosted subagents. They intentionally avoid Codex-local
-custom-agent TOML assumptions, local runtime inspectors, and per-agent sandbox guarantees.
+These contracts are for ChatGPT Work. Apply them according to the capability tier declared by `SKILL.md`.
+
+## Naming rule
+
+- Tier A may use exact model lane names only when the runtime exposes evidence for them.
+- Tier B uses semantic role names and never claims hidden model identity.
+- Tier C collapses worker execution into the parent while preserving the same packet and verification discipline.
+
+A requested model, reasoning level, fresh context, or read-only behavior is not a technical guarantee unless the host exposes supporting evidence.
 
 ## Shared implementation packet
 
@@ -9,7 +16,7 @@ Every implementation worker receives all sections below.
 
 ~~~text
 ROLE
-<mechanical implementer | medium implementer | complex specialist>
+<mechanical-worker | implementation-worker | complex-specialist>
 
 OBJECTIVE
 <Observable outcome and why it matters.>
@@ -42,33 +49,24 @@ GAPS: <remaining issues or none>
 
 The parent independently verifies observable state before acceptance.
 
-## Luna lane
+## Mechanical lane
 
-Request GPT-5.6 Luna for mechanical/light or tightly bounded work. Prefer light/medium
-reasoning for deterministic edits and medium/high reasoning when the spec is complete but
-execution spans more context. Luna must not silently change architecture.
+Tier A may request GPT-5.6 Luna for mechanical/light or tightly bounded work. Tier B uses `mechanical-worker`. Use it for repetitive edits, renames, formatting, simple wiring, well-specified CRUD, extraction, routine research, bounded document transformation, and similar deterministic work.
 
-Use Luna for examples such as repetitive edits, renames, formatting, simple wiring,
-well-specified CRUD, extraction, routine research, bounded document transformation, or
-other work where the specification largely determines the solution.
+The worker must not silently change architecture.
 
-## Terra lane
+## Implementation lane
 
-Request GPT-5.6 Terra for medium implementation and work requiring local judgment,
-integration across components, debugging, non-trivial refactors, or wider context. Prefer
-medium reasoning by default and high when evidence shows material complexity.
+Tier A may request GPT-5.6 Terra for medium implementation and work requiring local judgment, integration, debugging, non-trivial refactors, or wider context. Tier B uses `implementation-worker`.
 
-Terra may resolve implementation details left open by the packet, but must surface any
-architectural ambiguity rather than silently redefine interfaces.
+The worker may resolve implementation details left open by the packet, but must surface architectural ambiguity instead of redefining interfaces.
 
-## Sol specialist lane
+## Complex specialist
 
-Request GPT-5.6 Sol / high when the parent wants an independent architecture specialist,
-complex debugger, or deep reasoning pass. This lane should normally return a decision or
-analysis packet rather than perform routine implementation.
+Tier A may request GPT-5.6 Sol/high when exact routing is proven. Tier B uses `complex-specialist`. This lane should normally return a decision packet rather than perform routine implementation.
 
 ~~~text
-SOL DECISION
+COMPLEX DECISION
 PROBLEM: <root problem>
 DECISION: <recommended architecture/approach>
 INVARIANTS: <must remain true>
@@ -77,15 +75,13 @@ RISKS: <material risks>
 ACCEPTANCE CRITERIA: <observable success conditions>
 ~~~
 
-## Fresh Sol reviewer
+## Independent reviewer
 
-For audit/full routes, spawn a fresh Sol context after parent verification. Instruct it
-to remain behaviorally read-only. Do not claim hard isolation because Work subagents may
-inherit available tools and permissions.
+For audit/full routes, use a separate review workstream when the runtime supports one. Tier A may request Sol/high when observable; Tier B uses `independent-reviewer`; Tier C performs a disclosed second-pass parent audit.
 
 ~~~text
 ROLE
-Act as an independent final reviewer. Do not edit or implement fixes.
+Act as an independent final reviewer when you are in a separate workstream. Do not edit or implement fixes.
 
 STATED GOAL
 <user outcome>
@@ -99,17 +95,15 @@ INTERFACES AND CONSTRAINTS
 VERIFICATION EVIDENCE
 <parent-observed checks>
 
-SOL REVIEW
+REVIEW
 VERDICT: ship | fix-first | rethink
 REASON: <decisive evidence>
 FINDINGS: <precise findings or none>
 RESIDUAL RISK: <remaining risk or none>
 ~~~
 
-A fix invalidates the prior verdict.
+A fix invalidates the prior verdict. Never claim enforced read-only isolation unless Work exposes proof.
 
 ## Parallel read workers
 
-Parallel read workers must have disjoint questions and no mutation objective. Give each
-a narrow question and require concise evidence-backed output. The parent synthesizes,
-resolves conflicts, and owns final decisions.
+Parallel readers receive disjoint questions and no mutation objective. Require concise evidence-backed output. The parent synthesizes, resolves conflicts, and owns final decisions.
