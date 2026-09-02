@@ -12,6 +12,7 @@ PAIRS = [
     (ROOT / "skills/orchestration/references/operations.md", PKG / "skills/orchestration/references/operations.md"),
     (ROOT / "skills/orchestration/references/role-contracts.md", PKG / "skills/orchestration/references/role-contracts.md"),
     (ROOT / "skills/orchestration/references/runtime-evidence.md", PKG / "skills/orchestration/references/runtime-evidence.md"),
+    (ROOT / "skills/orchestration/references/plus-work-proof.md", PKG / "skills/orchestration/references/plus-work-proof.md"),
 ]
 errors = []
 
@@ -33,6 +34,9 @@ try:
         errors.append("plugin manifest name mismatch")
     if manifest.get("skills") != "./skills/":
         errors.append("plugin manifest skills path must be ./skills/")
+    version = tuple(map(int, manifest.get("version", "0.0.0").split(".")))
+    if version < (0, 3, 0):
+        errors.append("plugin version must be >=0.3.0 for Plus-only proof contract")
     prompts = manifest.get("interface", {}).get("defaultPrompt", [])
     if not prompts or len(prompts) > 3 or any(len(p) > 128 for p in prompts):
         errors.append("defaultPrompt must contain 1-3 entries of <=128 characters")
@@ -60,26 +64,41 @@ if skill.is_file():
     markers = [
         "name: orchestration",
         "WORK CAPABILITY CHECK",
-        "Tier A",
-        "Tier B",
-        "Tier C",
+        "Tier A", "Tier B", "Tier C",
         "ROUTING EVIDENCE",
         "DELEGATION VALUE CHECK",
         "QUALITY VERDICT",
         "EFFICIENCY EVIDENCE",
-        "request_accepted",
-        "runtime_attested",
-        "usage_verified",
+        "request_accepted", "runtime_attested", "usage_verified",
         "Acceptance",
         "Fail-closed routing and budget gate",
         "references/runtime-evidence.md",
-        "execution_id",
-        "input_tokens",
-        "output_tokens",
+        "execution_id", "input_tokens", "output_tokens",
+        "PLUS-ONLY WORK PROOF",
+        "references/plus-work-proof.md",
+        "PASS-PLUS", "PARTIAL-PLUS", "FAIL-PLUS",
+        "PROOF_NONCE",
+        "No OpenAI API",
+        "No external MCP server",
     ]
     for marker in markers:
         if marker not in text:
             errors.append(f"SKILL.md missing required marker: {marker}")
+
+proof = PKG / "skills/orchestration/references/plus-work-proof.md"
+if proof.is_file():
+    text = proof.read_text()
+    for marker in [
+        "PLUS-ONLY WORK PROOF",
+        "No OpenAI API",
+        "No external MCP server",
+        "requested != accepted != attested",
+        "Tier B is a valid passing runtime outcome",
+        "effective backend model remains unverified",
+        "PASS-PLUS", "PARTIAL-PLUS", "FAIL-PLUS",
+    ]:
+        if marker not in text:
+            errors.append(f"plus-work-proof.md missing required marker: {marker}")
 
 yaml = PKG / "skills/orchestration/agents/openai.yaml"
 if yaml.is_file():
@@ -99,6 +118,7 @@ print(f"plugin={NAME}")
 print(f"package=plugins/{NAME}")
 print("capability_gate=A/B/C")
 print("routing_evidence=requested/accepted/attested")
+print("plus_only_proof=ok")
 print("quality_separate=ok")
 print("efficiency_evidence=ok")
 print("delegation_value_check=ok")
