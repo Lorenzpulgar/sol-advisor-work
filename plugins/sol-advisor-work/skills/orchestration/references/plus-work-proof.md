@@ -7,25 +7,26 @@ This contract verifies the strongest claims available from ChatGPT Work on a nor
 - No OpenAI API.
 - No external MCP server.
 - No Platform API key, tunnel, external telemetry service, or separate paid runtime.
-- Use only the active ChatGPT Work session, its native agent controls, observable agent/workstream UI, repository tools already available to the session, and parent verification.
+- Use only the active ChatGPT Work session, native agent controls, observable agent/workstream UI, repository tools already available to the session, and parent verification.
 - requested != accepted != attested. A requested or accepted model/reasoning setting is not backend execution attestation.
 - Tier B is a valid passing runtime outcome when Work creates the expected distinct workstreams and accepts routing controls but hides effective-model metadata.
 - If the host exposes no effective model metadata, the effective backend model remains unverified.
 
 ## Purpose
 
-The proof answers two different questions and never merges them:
+Keep three dimensions independent:
 
-1. **Functional proof:** did this Advisor cause Work to follow the intended orchestration protocol?
-2. **Backend proof:** did OpenAI attest the effective model/reasoning used by each worker?
+1. functional proof — did Work follow the Advisor protocol?
+2. capability tier — what does the host expose and attest?
+3. backend model attestation — did the host prove the effective worker model?
 
-The first can pass on Plus. The second passes only when the host itself exposes attributable metadata.
+A quality defect does not change capability tier. Tier B may receive a functional pass.
 
 ## Nonce-bound native smoke test
 
-When the user explicitly requests a Plus-only proof, create a short random-looking run nonce in the parent, for example `ADVISOR_PROOF_7F3A9C`. Use that same nonce in every test lane. The nonce is not a security primitive; it prevents accidentally mixing outputs from different smoke tests.
+Create one short random-looking `PROOF_NONCE` in the parent and use it unchanged in every lane.
 
-Use the smallest representative lanes necessary:
+Use the smallest representative lanes:
 
 ```text
 mechanical: request Luna / low
@@ -34,56 +35,77 @@ complex: request Sol / high
 review: request Sol / high in a separate review workstream
 ```
 
-Each spawned workstream receives:
+Each workstream receives the same nonce, an exact lane name, a tiny deterministic objective, and an exact return contract. The parent verifies nonce, lane, output correctness, request acceptance, and observable workstream separation.
+
+## Canonical proof tokens
+
+Critical proof fields are protocol tokens, not prose. Do not paraphrase canonical proof tokens.
+
+For a Tier B smoke-test lane that asks the worker to identify the expected capability classification, return exactly:
 
 ```text
-PROOF_NONCE: <same nonce>
-PROOF_LANE: <mechanical | medium | complex | review>
-OBJECTIVE: <tiny deterministic representative task>
-RETURN: nonce, lane, result, verification evidence only
+PROOF_CAPABILITY_TIER=B
 ```
 
-The parent must verify that each returned nonce/lane matches the request and that the result is correct. Distinct workstreams may be counted only when the Work host exposes them as distinct agents/workstreams.
+Do not return `Tier B`, `Tier 2`, `B`, or any synonym in place of that token.
 
-## Functional proof grade
+The final functional grade must be exactly one of:
 
-Return one of:
+```text
+FUNCTIONAL_GRADE=PASS-PLUS
+FUNCTIONAL_GRADE=PARTIAL-PLUS
+FUNCTIONAL_GRADE=FAIL-PLUS
+```
 
-- `PASS-PLUS`: Work exposed multi-agent execution; required representative workstreams completed; requested controls were accepted where available; parent verification passed; review was separate when requested; no false backend-model claims were made.
-- `PARTIAL-PLUS`: the Advisor loaded and followed its capability/fallback rules, but one or more native Work capabilities needed for the multi-agent smoke test were unavailable or ambiguous.
-- `FAIL-PLUS`: the Advisor violated its contract, fabricated unavailable evidence, failed parent verification, mixed lanes/nonces, or could not execute its required fallback.
+The backend-model field must be exactly one of:
 
-A `PASS-PLUS` does **not** imply Tier A. Tier B can be `PASS-PLUS`.
+```text
+BACKEND_MODEL_ATTESTATION=VERIFIED
+BACKEND_MODEL_ATTESTATION=UNVERIFIED
+```
 
-## Evidence report
+Use `BACKEND_MODEL_ATTESTATION=VERIFIED` only when host-provided execution metadata attests the effective model. Accepted model controls, worker prose, task quality, and UI agent count are insufficient.
+
+## Functional grading
+
+`FUNCTIONAL_GRADE=PASS-PLUS` requires the required native workstreams to complete, nonce/lane/output checks to pass, requested controls to be accepted where supported, parent verification to pass, and separate review to occur when requested, with no false backend claims.
+
+`FUNCTIONAL_GRADE=PARTIAL-PLUS` means the Advisor followed its capability/fallback contract but one or more native Work capabilities or deterministic proof assertions were unavailable, ambiguous, or incorrect.
+
+`FUNCTIONAL_GRADE=FAIL-PLUS` means the Advisor violated the contract, fabricated evidence, mixed nonces/lanes, failed required parent verification, or could not execute its required fallback.
+
+A functional pass does not imply Tier A. Tier B can receive `FUNCTIONAL_GRADE=PASS-PLUS`.
+
+## Canonical evidence report
 
 ```text
 PLUS-ONLY WORK PROOF
-proof_nonce: <value>
-functional_grade: PASS-PLUS | PARTIAL-PLUS | FAIL-PLUS
-capability_tier: A | B | C
-multi_agent_observed: yes | no
-separate_workstreams_observed: <count>
+PROOF_NONCE=<value>
+FUNCTIONAL_GRADE=PASS-PLUS | PARTIAL-PLUS | FAIL-PLUS
+PROOF_CAPABILITY_TIER=A | B | C
+BACKEND_MODEL_ATTESTATION=VERIFIED | UNVERIFIED
+MULTI_AGENT_OBSERVED=yes | no
+SEPARATE_WORKSTREAMS_OBSERVED=<count>
 
-LANES:
-mechanical: requested=<...>; accepted=<yes/no/unknown>; nonce_verified=<yes/no>; output_verified=<yes/no>; runtime_attested=<yes/no>
-medium: requested=<...>; accepted=<...>; nonce_verified=<...>; output_verified=<...>; runtime_attested=<...>
-complex: requested=<...>; accepted=<...>; nonce_verified=<...>; output_verified=<...>; runtime_attested=<...>
-review: requested=<...>; accepted=<...>; nonce_verified=<...>; output_verified=<...>; runtime_attested=<...>
+MECHANICAL: requested=<...>; accepted=<yes/no/unknown>; nonce_verified=<yes/no>; output_verified=<yes/no>; runtime_attested=<yes/no>
+MEDIUM: requested=<...>; accepted=<...>; nonce_verified=<...>; output_verified=<...>; runtime_attested=<...>
+COMPLEX: requested=<...>; accepted=<...>; nonce_verified=<...>; output_verified=<...>; runtime_attested=<...>
+REVIEW: requested=<...>; accepted=<...>; nonce_verified=<...>; output_verified=<...>; runtime_attested=<...>
 
-QUALITY VERDICT: ship | fix-first | rethink
-BACKEND MODEL VERDICT: verified | unverified
-EFFICIENCY VERDICT: verified | plausible | unverified | inefficient
+QUALITY_VERDICT=ship | fix-first | rethink
+EFFICIENCY_VERDICT=verified | plausible | unverified | inefficient
 ```
+
+Canonical keys and enum values must be returned exactly. Explanatory prose may follow only where requested, and must not replace these fields.
 
 ## Claim rules
 
-Functional evidence may prove that Work created distinct workstreams, received the intended lane packet, accepted requested routing controls, returned lane-bound results, and passed parent/reviewer checks.
+Functional evidence may prove that Work created distinct workstreams, delivered the intended lane packet, accepted requested controls, returned nonce-bound results, and passed parent/reviewer checks.
 
 Do not use worker self-identification, model names in prompts, accepted parameters, UI labels without host execution metadata, or successful task quality as proof of the effective backend model.
 
-Efficiency may be `plausible` when cheaper-model routing requests were accepted, delegation was justified, and unnecessary delegations were zero, but model-specific usage is hidden. Call efficiency `verified` only when host-provided attributable usage telemetry exists.
+Efficiency may be `plausible` when cheaper-model requests were accepted, delegation was justified, and unnecessary delegations were zero, but model-specific usage is hidden. Call efficiency `verified` only when host-provided attributable usage telemetry exists.
 
 ## Production implication
 
-A successful Plus-only proof is sufficient to use the Advisor as a functional Work orchestrator under its honest Tier B semantics. It is not sufficient to guarantee hidden Luna/Terra/Sol execution or exact savings. Keep those claims unverified until OpenAI exposes backend attestation or attributable usage telemetry in the active host.
+A successful Plus-only proof is sufficient to use the Advisor as a functional Work orchestrator under honest Tier B semantics. It is not sufficient to guarantee hidden Luna/Terra/Sol execution or exact savings.
