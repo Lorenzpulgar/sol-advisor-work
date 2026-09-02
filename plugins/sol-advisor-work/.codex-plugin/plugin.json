@@ -1,6 +1,6 @@
 {
   "name": "sol-advisor-work",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Quality-first ChatGPT Work orchestration led by Sol with capability-aware delegation and verification.",
   "author": {"name": "Lorenzpulgar", "url": "https://github.com/Lorenzpulgar"},
   "homepage": "https://github.com/Lorenzpulgar/sol-advisor-work#readme",
@@ -11,7 +11,7 @@
   "interface": {
     "displayName": "Sol Advisor Work",
     "shortDescription": "Quality-first Sol orchestration that adapts to the Work capabilities actually exposed.",
-    "longDescription": "Sol owns intent, architecture, verification, and acceptance. Includes a Plus-only native proof contract for verifying orchestration without API or external MCP. Exact Luna/Terra/Sol execution is claimed only when Work exposes host attestation; otherwise the workflow safely uses honest Tier B role-based routing.",
+    "longDescription": "Sol owns intent, architecture, verification, and acceptance. Includes a Plus-only native proof contract with canonical non-paraphrasable proof tokens. Exact Luna/Terra/Sol execution is claimed only when Work exposes host attestation; otherwise the workflow safely uses honest Tier B role-based routing.",
     "developerName": "Lorenzpulgar",
     "category": "Productivity",
     "capabilities": ["Interactive", "Write"],
