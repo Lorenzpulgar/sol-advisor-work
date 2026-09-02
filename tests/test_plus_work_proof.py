@@ -28,14 +28,32 @@ class PlusWorkProofContractTests(unittest.TestCase):
         ]:
             self.assertIn(marker, text)
 
-    def test_skill_requires_plus_only_proof_when_requested(self):
-        text = (ROOT / "skills/orchestration/SKILL.md").read_text()
-        self.assertIn("PLUS-ONLY WORK PROOF", text)
-        self.assertIn("plus-work-proof.md", text)
+    def test_contract_uses_canonical_non_paraphrasable_tokens(self):
+        text = (ROOT / "skills/orchestration/references/plus-work-proof.md").read_text()
+        for marker in [
+            "PROOF_CAPABILITY_TIER=B",
+            "FUNCTIONAL_GRADE=PASS-PLUS",
+            "FUNCTIONAL_GRADE=PARTIAL-PLUS",
+            "FUNCTIONAL_GRADE=FAIL-PLUS",
+            "BACKEND_MODEL_ATTESTATION=UNVERIFIED",
+            "Do not paraphrase canonical proof tokens",
+        ]:
+            self.assertIn(marker, text)
 
-    def test_manifest_version_bumped_for_contract_change(self):
+    def test_skill_requires_canonical_plus_only_proof_when_requested(self):
+        text = (ROOT / "skills/orchestration/SKILL.md").read_text()
+        for marker in [
+            "PLUS-ONLY WORK PROOF",
+            "plus-work-proof.md",
+            "PROOF_CAPABILITY_TIER=",
+            "FUNCTIONAL_GRADE=",
+            "BACKEND_MODEL_ATTESTATION=",
+        ]:
+            self.assertIn(marker, text)
+
+    def test_manifest_version_bumped_for_canonical_contract_change(self):
         manifest = json.loads((ROOT / ".codex-plugin/plugin.json").read_text())
-        self.assertGreaterEqual(tuple(map(int, manifest["version"].split("."))), (0, 3, 0))
+        self.assertGreaterEqual(tuple(map(int, manifest["version"].split("."))), (0, 3, 1))
 
 
 if __name__ == "__main__":
