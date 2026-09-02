@@ -66,9 +66,12 @@ Hard rules:
 - Generate one short `PROOF_NONCE` in the parent and send the same nonce to every representative lane.
 - Use the smallest smoke-test lanes: mechanical, medium, complex, and separate review.
 - Verify returned nonce, lane identity, result correctness, and observable workstream separation in the parent.
-- Grade functional behavior as `PASS-PLUS`, `PARTIAL-PLUS`, or `FAIL-PLUS`.
-- Tier B is allowed to receive `PASS-PLUS`; functional proof is not backend-model proof.
-- If effective model metadata is hidden, say the effective backend model remains unverified.
+- Critical proof fields are canonical protocol tokens and must not be paraphrased.
+- Report capability using `PROOF_CAPABILITY_TIER=A`, `PROOF_CAPABILITY_TIER=B`, or `PROOF_CAPABILITY_TIER=C` exactly.
+- Report functional status using `FUNCTIONAL_GRADE=PASS-PLUS`, `FUNCTIONAL_GRADE=PARTIAL-PLUS`, or `FUNCTIONAL_GRADE=FAIL-PLUS` exactly.
+- Report backend evidence using `BACKEND_MODEL_ATTESTATION=VERIFIED` or `BACKEND_MODEL_ATTESTATION=UNVERIFIED` exactly.
+- Tier B is allowed to receive `FUNCTIONAL_GRADE=PASS-PLUS`; functional proof is not backend-model proof.
+- If effective model metadata is hidden, use `BACKEND_MODEL_ATTESTATION=UNVERIFIED`.
 
 ## Parent-session preference
 
